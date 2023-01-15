@@ -1,4 +1,3 @@
-import { Poll } from './../../../shared/poll-types';
 import { AddParticipantData, CreatePollData } from './types';
 import {
   Inject,
@@ -9,6 +8,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { Redis } from 'ioredis';
 import { IORedisKey } from 'src/redis.module';
+import { Poll } from 'shared';
 @Injectable()
 export class PollsRepository {
   // to use time-to-live from configuration
