@@ -18,6 +18,17 @@ export class ControllerAuthGuard implements CanActivate {
 
     this.logger.debug(`Checking for auth token on request body`, request.body);
 
-    return false;
+    const { accessToken } = request.body;
+
+    try {
+      const payload = this.jwtService.verify(accessToken);
+      // append user and poll to socket
+      request.userID = payload.sub;
+      request.pollID = payload.pollID;
+      request.name = payload.name;
+      return true;
+    } catch (e) {
+      throw new ForbiddenException('Invalid authorization token');
+    }
   }
 }
