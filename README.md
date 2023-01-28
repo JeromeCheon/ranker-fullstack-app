@@ -14,3 +14,9 @@ Forked from [JacobSNGoodwin/ranker-course](https://github.com/JacobSNGoodwin/ran
 
 ### Back-end
 - NestJS(based on TS)
+
+### DB
+- Redis(In memory DB based on key-value)
+
+### Real-time technique
+- Socket.io (Web Socket)
