@@ -1,5 +1,7 @@
 # ranker-fullstack-app
-This project is started by following "JacoboCode" youtube channel and his lectures
+This project is started by following "JacoboCode" youtube channel and his lectures.
+
+The main purpose is to practice full stack skills by using many different skills below.
 
 Youtube Channel https://www.youtube.com/@jacobocode5654
 
