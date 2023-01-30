@@ -1,5 +1,11 @@
 import { Logger } from '@nestjs/common';
-import { OnGatewayInit, WebSocketGateway } from '@nestjs/websockets';
+import {
+  OnGatewayConnection,
+  OnGatewayDisconnect,
+  OnGatewayInit,
+  WebSocketGateway,
+} from '@nestjs/websockets';
+import { Socket } from 'socket.io';
 import { PollsService } from './polls.service';
 
 @WebSocketGateway({
@@ -8,11 +14,22 @@ import { PollsService } from './polls.service';
   //   origin: [], // 근데 port를 이렇게 일일이 하드코딩 할수는 없는 일. 해결하기 위해 IoAdapter 쓰자
   // },
 })
-export class PollsGateway implements OnGatewayInit {
+export class PollsGateway
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+{
   private readonly logger = new Logger(PollsGateway.name);
   constructor(private readonly pollsService: PollsService) {}
+
   // Gateway initialized (provided in module and instantiated)
   afterInit(): void {
     this.logger.log(`Websocket Gateway initialized.`);
+  }
+
+  handleConnection(client: Socket) {
+    throw new Error('Method not implemented.');
+  }
+
+  handleDisconnect(client: Socket) {
+    throw new Error('Method not implemented.');
   }
 }
