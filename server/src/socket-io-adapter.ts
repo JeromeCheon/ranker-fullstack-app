@@ -30,7 +30,7 @@ export class SocketIOAdapter extends IoAdapter {
       cors,
     };
 
-    // we need to return this, evenm though the signature says it returns void
+    // we need to return this, even though the signature says it returns void
     return super.createIOServer(port, optionsWithCORS);
   }
 }
