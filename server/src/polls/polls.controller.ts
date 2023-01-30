@@ -1,9 +1,20 @@
 import { CreatePollDto, JoinPollDto } from './dtos';
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  Req,
+  UseGuards,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { PollsService } from './polls.service';
 import { ControllerAuthGuard } from './controller-auth.guard';
 import { RequestWithAuth } from './types';
 
+// check this UsePipes decorator in NestJS docs
+// add this pipe at polls gateway as well
+@UsePipes(new ValidationPipe())
 @Controller('polls')
 export class PollsController {
   constructor(private pollsService: PollsService) {}
