@@ -4,8 +4,9 @@ import {
   OnGatewayDisconnect,
   OnGatewayInit,
   WebSocketGateway,
+  WebSocketServer,
 } from '@nestjs/websockets';
-import { Socket } from 'socket.io';
+import { Namespace, Socket } from 'socket.io';
 import { PollsService } from './polls.service';
 
 @WebSocketGateway({
@@ -20,16 +21,28 @@ export class PollsGateway
   private readonly logger = new Logger(PollsGateway.name);
   constructor(private readonly pollsService: PollsService) {}
 
+  @WebSocketServer() io: Namespace;
+
   // Gateway initialized (provided in module and instantiated)
   afterInit(): void {
     this.logger.log(`Websocket Gateway initialized.`);
   }
 
   handleConnection(client: Socket) {
-    throw new Error('Method not implemented.');
+    const sockets = this.io.sockets;
+
+    this.logger.log(`ws Client with id: ${client.id} connected!`);
+    this.logger.debug(`Number of connected sockets: ${sockets.size}`);
+
+    this.io.emit('hello', `from ${client.id}`);
   }
 
   handleDisconnect(client: Socket) {
-    throw new Error('Method not implemented.');
+    const sockets = this.io.sockets;
+
+    this.logger.log(`Disconnected socket id: ${client.id} connected!`);
+    this.logger.debug(`Number of connected sockets: ${sockets.size}`);
+    // TODO - remove client from poll and send `participants_updated` event to
+    // remaining clients
   }
 }
