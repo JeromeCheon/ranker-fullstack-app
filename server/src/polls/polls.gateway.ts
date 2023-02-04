@@ -3,8 +3,10 @@ import {
   OnGatewayConnection,
   OnGatewayDisconnect,
   OnGatewayInit,
+  SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
+  WsException,
 } from '@nestjs/websockets';
 import { Namespace, Socket } from 'socket.io';
 import { PollsService } from './polls.service';
@@ -45,5 +47,12 @@ export class PollsGateway
     this.logger.debug(`Number of connected sockets: ${sockets.size}`);
     // TODO - remove client from poll and send `participants_updated` event to
     // remaining clients
+  }
+
+  @SubscribeMessage('test')
+  async test() {
+    throw new WsException({ field: 'field', message: 'You screwed up' });
+    // if I throw the basic root Error object, it returns Internal server Error instead
+    // throw new Error('blar');
   }
 }
