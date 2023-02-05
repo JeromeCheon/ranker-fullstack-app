@@ -6,9 +6,9 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
-  WsException,
 } from '@nestjs/websockets';
 import { Namespace, Socket } from 'socket.io';
+import { WsBadRequestException } from 'src/exceptions/ws-exceptions';
 import { PollsService } from './polls.service';
 
 @UsePipes(new ValidationPipe())
@@ -51,7 +51,7 @@ export class PollsGateway
 
   @SubscribeMessage('test')
   async test() {
-    throw new WsException({ field: 'field', message: 'You screwed up' });
+    throw new WsBadRequestException('Invalid empty data :)');
     // if I throw the basic root Error object, it returns Internal server Error instead
     // throw new Error('blar');
   }
