@@ -1,4 +1,5 @@
 import { Request } from '@nestjs/common';
+import { Socket } from 'socket.io';
 
 // service types for such as createPoll, joinPoll
 export type CreatePollFields = {
@@ -39,3 +40,4 @@ type AuthPayload = {
 };
 
 export type RequestWithAuth = Request & AuthPayload;
+export type SocketWithAuth = Socket & AuthPayload;

@@ -1,4 +1,10 @@
-import { Logger, UsePipes, ValidationPipe } from '@nestjs/common';
+import {
+  BadRequestException,
+  Logger,
+  UseFilters,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -8,10 +14,11 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Namespace, Socket } from 'socket.io';
-import { WsBadRequestException } from 'src/exceptions/ws-exceptions';
+import { WsCatchAllFilter } from 'src/exceptions/ws-catch-all-filter';
 import { PollsService } from './polls.service';
 
 @UsePipes(new ValidationPipe())
+@UseFilters(new WsCatchAllFilter())
 @WebSocketGateway({
   namespace: 'polls',
   // cors: {
@@ -51,7 +58,7 @@ export class PollsGateway
 
   @SubscribeMessage('test')
   async test() {
-    throw new WsBadRequestException('Invalid empty data :)');
+    throw new BadRequestException({ test: 'test' });
     // if I throw the basic root Error object, it returns Internal server Error instead
     // throw new Error('blar');
   }
