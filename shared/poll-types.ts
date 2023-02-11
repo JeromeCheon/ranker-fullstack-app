@@ -11,7 +11,7 @@ export interface Poll {
 	// nominations: Nominations;
 	// rankings: Rankings;
 	// results: Results;
-	// hasStarted: boolean;
+	hasStarted: boolean;
 }
 
 // 자, 이렇게 package.json, tsconfig, poll-types 까지 생성해줬으면
