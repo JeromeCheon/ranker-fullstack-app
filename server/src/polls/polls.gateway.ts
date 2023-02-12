@@ -13,9 +13,10 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { Namespace, Socket } from 'socket.io';
+import { Namespace } from 'socket.io';
 import { WsCatchAllFilter } from 'src/exceptions/ws-catch-all-filter';
 import { PollsService } from './polls.service';
+import { SocketWithAuth } from './types';
 
 @UsePipes(new ValidationPipe())
 @UseFilters(new WsCatchAllFilter())
@@ -31,6 +32,7 @@ export class PollsGateway
   private readonly logger = new Logger(PollsGateway.name);
   constructor(private readonly pollsService: PollsService) {}
 
+  // 여기서 io는 WS server 중에 위에 polls로 정의한 namespace에만 접근하게 해줌
   @WebSocketServer() io: Namespace;
 
   // Gateway initialized (provided in module and instantiated)
@@ -38,22 +40,62 @@ export class PollsGateway
     this.logger.log(`Websocket Gateway initialized.`);
   }
 
-  handleConnection(client: Socket) {
+  async handleConnection(client: SocketWithAuth) {
     const sockets = this.io.sockets;
+
+    this.logger.debug(
+      // able to be deleted after fully understanding socketIO
+      `Socket connected with userID: ${client.userID}, pollID: ${client.pollID}
+      , and name: "${client.name}"`,
+    );
 
     this.logger.log(`ws Client with id: ${client.id} connected!`);
     this.logger.debug(`Number of connected sockets: ${sockets.size}`);
 
-    this.io.emit('hello', `from ${client.id}`);
+    const roomName = client.pollID;
+    await client.join(roomName);
+
+    const connectedClients = this.io.adapter.rooms?.get(roomName)?.size ?? 0;
+
+    this.logger.debug(
+      `userID: ${client.userID} joined room with name: ${roomName}`,
+    );
+    this.logger.debug(
+      `Total clients connected to room '${roomName}': ${connectedClients}`,
+    );
+
+    const updatedPoll = await this.pollsService.addParticipant({
+      pollID: client.pollID,
+      userID: client.userID,
+      name: client.name,
+    });
+
+    this.io.to(roomName).emit('poll_updated', updatedPoll);
   }
 
-  handleDisconnect(client: Socket) {
+  async handleDisconnect(client: SocketWithAuth) {
     const sockets = this.io.sockets;
 
-    this.logger.log(`Disconnected socket id: ${client.id} connected!`);
+    const { pollID, userID } = client;
+    const updatedPoll = await this.pollsService.removeParticipant(
+      pollID,
+      userID,
+    );
+
+    const roomName = client.pollID;
+    const clientCount = this.io.adapter.rooms?.get(roomName)?.size ?? 0;
+
+    this.logger.log(`Disconnected socket id: ${client.id}`);
     this.logger.debug(`Number of connected sockets: ${sockets.size}`);
-    // TODO - remove client from poll and send `participants_updated` event to
-    // remaining clients
+    this.logger.debug(
+      `Total clients connected to room '${roomName}': ${clientCount}`,
+    );
+
+    // updatedPoll could be undefined if the poll already started
+    // in this case, the socket is disconnect, but no the poll state
+    if (updatedPoll) {
+      this.io.to(pollID).emit('poll_updated', updatedPoll);
+    }
   }
 
   @SubscribeMessage('test')
