@@ -15,9 +15,10 @@ export class WsCatchAllFilter implements ExceptionFilter {
     if (exception instanceof BadRequestException) {
       const exceptionData = exception.getResponse();
 
-      const wsException = new WsBadRequestException(
-        exceptionData['message'] ?? 'Bad Request',
-      );
+      const exceptionMessage =
+        exceptionData['message'] ?? exceptionData ?? exception.name;
+
+      const wsException = new WsBadRequestException(exceptionMessage);
       socket.emit('exception', wsException.getError());
       return;
     }
