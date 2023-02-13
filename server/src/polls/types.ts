@@ -26,9 +26,10 @@ export type AddParticipantFields = {
   name: string;
 };
 
-export type RemoveParticipantData = {
+export type AddNominationFields = {
   pollID: string;
   userID: string;
+  text: string;
 };
 
 // repository types
@@ -50,6 +51,12 @@ export type AddNominationData = {
   nominationID: string;
   nomination: Nomination;
 };
+
+export type RemoveParticipantData = {
+  pollID: string;
+  userID: string;
+};
+
 // guard types
 export type AuthPayload = {
   userID: string;
