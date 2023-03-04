@@ -22,3 +22,6 @@ Forked from [JacobSNGoodwin/ranker-course](https://github.com/JacobSNGoodwin/ran
 
 ### Real-time technique
 - Socket.io (Web Socket)
+----- 
+Go lang 언어 학습으로 인한 일시 중단 
+----------
